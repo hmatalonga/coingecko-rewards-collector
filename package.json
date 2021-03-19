@@ -1,0 +1,20 @@
+{
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hmatalonga/coingecko-rewards-collector.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/hmatalonga/coingecko-rewards-collector/issues"
+  },
+  "homepage": "https://github.com/hmatalonga/coingecko-rewards-collector#readme",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "puppeteer": "^8.0.0"
+  }
+}
