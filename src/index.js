@@ -12,7 +12,7 @@ const puppeteer = require('puppeteer');
     ]
   });
 
-  console.log(`${Date.now()}`);
+  console.log(`${(new Date()).toLocaleString()}`);
 
   const browserVersion = await browser.version();
   console.log(`Started ${browserVersion}`);
