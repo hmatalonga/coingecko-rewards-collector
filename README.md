@@ -1,4 +1,4 @@
-# :robot: coingecko-rewards-collector
+# :frog: coingecko-rewards-collector
 > Bot that collects daily candy rewards from coingecko.com
 
 Minimal bot that logins daily on [coingecko.com](https://coingecko.com/en) to collect the candy.
