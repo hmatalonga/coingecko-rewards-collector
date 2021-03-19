@@ -1,0 +1,12 @@
+version: '3.4'
+
+services:
+  coingecko-rewards-collector:
+    image: coingecko-rewards-collector
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    environment:
+      - NODE_ENV=production
+      - USERNAME=${USERNAME}
+      - PASSWORD=${PASSWORD}
