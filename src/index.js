@@ -12,11 +12,15 @@ const puppeteer = require('puppeteer');
     ]
   });
 
+  console.log(`${Date.now()}`);
+
   const browserVersion = await browser.version();
   console.log(`Started ${browserVersion}`);
 
   const page = await browser.newPage();
+
   await page.goto('https://coingecko.com/en');
+  console.log('Navigated to https://coingecko.com/en');
 
   const loginSelector = 'a.text-body[data-target="#signInModal"]';
 
@@ -24,8 +28,12 @@ const puppeteer = require('puppeteer');
   await page.click(loginSelector);
   await page.waitForSelector('form#signInModalForm');
 
+  console.log('Opened sign in modal form.');
+
   await page.type('input#signInEmail', process.env.USERNAME);
   await page.type('input#signInPassword', process.env.PASSWORD);
+
+  console.log('Typed login credentials.');
 
   await page.keyboard.press('Enter');
 
@@ -40,6 +48,8 @@ const puppeteer = require('puppeteer');
     window.scrollBy(0, window.innerHeight);
   });
 
+  console.log('Scrolled down the page.');
+
   const rewardButton = await page.$(buttonCollectSelector);
 
   if (rewardButton === null) {
@@ -53,6 +63,8 @@ const puppeteer = require('puppeteer');
   let balance = await page.$eval(balanceSelector, el => el.textContent);
 
   console.log(`Balance: ${balance}`);
+
+  console.log('Done!');
 
   await browser.close();
 })();
