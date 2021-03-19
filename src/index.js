@@ -5,6 +5,7 @@ const hook = new Discord.WebhookClient(process.env.DISCORD_WEBHOOK_ID, process.e
 
 (async () => {
   const browser = await puppeteer.launch({
+    headless: true,
     args: [
       // Required for Docker version of Puppeteer
       '--no-sandbox',
@@ -73,4 +74,6 @@ const hook = new Discord.WebhookClient(process.env.DISCORD_WEBHOOK_ID, process.e
   console.log('Done!');
 
   await browser.close();
+  
+  process.exit(0);
 })();
