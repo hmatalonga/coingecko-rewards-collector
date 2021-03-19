@@ -15,6 +15,7 @@
   },
   "homepage": "https://github.com/hmatalonga/coingecko-rewards-collector#readme",
   "dependencies": {
+    "discord.js": "^12.5.1",
     "puppeteer": "^8.0.0"
   },
   "devDependencies": {

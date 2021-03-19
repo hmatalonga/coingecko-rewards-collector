@@ -1,4 +1,7 @@
 const puppeteer = require('puppeteer');
+const Discord = require('discord.js');
+
+const hook = new Discord.WebhookClient(process.env.DISCORD_WEBHOOK_ID, process.env.DISCORD_WEBHOOK_TOKEN);
 
 (async () => {
   const browser = await puppeteer.launch({
@@ -54,15 +57,18 @@ const puppeteer = require('puppeteer');
 
   if (rewardButton === null) {
     console.log('Daily reward already collected.');
+    hook.send('Daily reward already collected.');
   } else {
     rewardButton.click();
     console.log('Reward collected!');
+    hook.send('Reward collected!');
   }
 
   await page.waitForSelector(balanceSelector);
   let balance = await page.$eval(balanceSelector, el => el.textContent);
 
   console.log(`Balance: ${balance}`);
+  hook.send(`Balance: ${balance}`);
 
   console.log('Done!');
 
