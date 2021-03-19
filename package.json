@@ -1,7 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "start": "node index.js"
+    "start": "node src/index.js"
   },
   "repository": {
     "type": "git",
@@ -14,7 +14,9 @@
   },
   "homepage": "https://github.com/hmatalonga/coingecko-rewards-collector#readme",
   "dependencies": {
-    "dotenv": "^8.2.0",
     "puppeteer": "^8.0.0"
+  },
+  "devDependencies": {
+    "dotenv": "^8.2.0"
   }
 }

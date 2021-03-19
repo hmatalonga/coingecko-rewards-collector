@@ -34,6 +34,7 @@ const puppeteer = require('puppeteer');
   await page.goto('https://www.coingecko.com/account/candy?locale=en');
 
   const buttonCollectSelector = 'form.button_to input.collect-candy-button';
+  const balanceSelector = 'div[data-target="points.balance"]';
 
   await page.evaluate(() => {
     window.scrollBy(0, window.innerHeight);
@@ -47,6 +48,11 @@ const puppeteer = require('puppeteer');
     rewardButton.click();
     console.log('Reward collected!');
   }
+
+  await page.waitForSelector(balanceSelector);
+  let balance = await page.$eval(balanceSelector, el => el.textContent);
+
+  console.log(`Balance: ${balance}`);
 
   await browser.close();
 })();
