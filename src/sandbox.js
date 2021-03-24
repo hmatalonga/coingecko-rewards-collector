@@ -1,50 +1,61 @@
 require('dotenv').config();
-const puppeteer = require('puppeteer');
+const puppeteer = require('puppeteer-extra');
+
+const StealthPlugin = require('puppeteer-extra-plugin-stealth');
+puppeteer.use(StealthPlugin());
+
+const AdblockerPlugin = require('puppeteer-extra-plugin-adblocker');
+puppeteer.use(AdblockerPlugin());
 
 (async () => {
-  const browser = await puppeteer.launch({headless: false});
+  const browser = await puppeteer.launch({ headless: false });
 
   const browserVersion = await browser.version();
   console.log(`Started ${browserVersion}`);
 
   const page = await browser.newPage();
-  await page.goto('https://coingecko.com/en');
 
-  const loginSelector = 'a.text-body[data-target="#signInModal"]';
+  try {
+    await page.goto('https://www.coingecko.com/account/sign_in');
+    await page.waitForTimeout(5 * 1000); // cloudflare wait time
 
-  await page.waitForSelector(loginSelector);
-  await page.click(loginSelector);
-  await page.waitForSelector('form#signInModalForm');
+    await page.waitForSelector('form#new_user');
 
-  await page.type('input#signInEmail', process.env.USERNAME);
-  await page.type('input#signInPassword', process.env.PASSWORD);
+    await page.type('input#user_email', process.env.USERNAME);
+    await page.type('input#user_password', process.env.PASSWORD);
 
-  await page.keyboard.press('Enter');
+    await page.keyboard.press('Enter');
 
-  await page.waitForNavigation();
+    await page.waitForNavigation();
 
-  await page.goto('https://www.coingecko.com/account/candy?locale=en');
+    await page.waitForTimeout(5 * 1000);
 
-  const buttonCollectSelector = 'form.button_to input.collect-candy-button';
-  const balanceSelector = 'div[data-target="points.balance"]';
+    await page.goto('https://www.coingecko.com/account/candy?locale=en');
 
-  await page.evaluate(() => {
-    window.scrollBy(0, window.innerHeight);
-  });
+    const buttonCollectSelector = 'form.button_to input.collect-candy-button';
+    const balanceSelector = 'div[data-target="points.balance"]';
 
-  const rewardButton = await page.$(buttonCollectSelector);
+    // await page.evaluate(() => {
+    //   window.scrollBy(0, window.innerHeight);
+    // });
 
-  if (rewardButton === null) {
-    console.log('Daily reward already collected.');
-  } else {
-    rewardButton.click();
-    console.log('Reward collected!');
+    const rewardButton = await page.$(buttonCollectSelector);
+
+    if (rewardButton === null) {
+      console.log('Daily reward already collected.');
+    } else {
+      rewardButton.click();
+      console.log('Reward collected!');
+    }
+
+    await page.waitForSelector(balanceSelector);
+    let balance = await page.$eval(balanceSelector, el => el.textContent);
+
+    console.log(`Balance: ${balance}`);
+
+    await browser.close();
+  } catch (error) {
+    console.error(error);
+    return;
   }
-
-  await page.waitForSelector(balanceSelector);
-  let balance = await page.$eval(balanceSelector, el => el.textContent);
-
-  console.log(`Balance: ${balance}`);
-
-  await browser.close();
 })();

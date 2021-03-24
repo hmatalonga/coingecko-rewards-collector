@@ -1,5 +1,11 @@
-const puppeteer = require('puppeteer');
 const Discord = require('discord.js');
+const puppeteer = require('puppeteer-extra');
+
+const StealthPlugin = require('puppeteer-extra-plugin-stealth');
+puppeteer.use(StealthPlugin());
+
+const AdblockerPlugin = require('puppeteer-extra-plugin-adblocker');
+puppeteer.use(AdblockerPlugin());
 
 const hook = new Discord.WebhookClient(process.env.DISCORD_WEBHOOK_ID, process.env.DISCORD_WEBHOOK_TOKEN);
 
@@ -21,59 +27,55 @@ const hook = new Discord.WebhookClient(process.env.DISCORD_WEBHOOK_ID, process.e
   const browserVersion = await browser.version();
   console.log(`Started ${browserVersion}`);
 
-  const page = await browser.newPage();
+const page = await browser.newPage();
 
-  await page.goto('https://coingecko.com/en');
-  console.log('Navigated to https://coingecko.com/en');
+  try {
 
-  const loginSelector = 'a.text-body[data-target="#signInModal"]';
+    await page.goto('https://www.coingecko.com/account/sign_in');
+    await page.waitForTimeout(5 * 1000); // cloudflare wait time
 
-  await page.waitForSelector(loginSelector);
-  await page.click(loginSelector);
-  await page.waitForSelector('form#signInModalForm');
-
-  console.log('Opened sign in modal form.');
-
-  await page.type('input#signInEmail', process.env.USERNAME);
-  await page.type('input#signInPassword', process.env.PASSWORD);
-
-  console.log('Typed login credentials.');
-
-  await page.keyboard.press('Enter');
-
-  await page.waitForNavigation();
-
-  await page.goto('https://www.coingecko.com/account/candy?locale=en');
-
-  const buttonCollectSelector = 'form.button_to input.collect-candy-button';
-  const balanceSelector = 'div[data-target="points.balance"]';
-
-  await page.evaluate(() => {
-    window.scrollBy(0, window.innerHeight);
-  });
-
-  console.log('Scrolled down the page.');
-
-  const rewardButton = await page.$(buttonCollectSelector);
-
-  if (rewardButton === null) {
-    console.log('Daily reward already collected.');
-    hook.send('Daily reward already collected.');
-  } else {
-    rewardButton.click();
-    console.log('Reward collected!');
-    hook.send('Reward collected!');
-  }
-
-  await page.waitForSelector(balanceSelector);
-  let balance = await page.$eval(balanceSelector, el => el.textContent);
-
-  console.log(`Balance: ${balance}`);
-  hook.send(`Balance: ${balance}`);
-
-  console.log('Done!');
-
-  await browser.close();
+    console.log('Navigated to https://www.coingecko.com/account/sign_in');
   
-  process.exit(0);
+    await page.waitForSelector('form#new_user');
+
+    await page.type('input#user_email', process.env.USERNAME);
+    await page.type('input#user_password', process.env.PASSWORD);
+
+    console.log('Typed login credentials.');
+
+    await page.keyboard.press('Enter');
+  
+    await page.waitForNavigation();
+
+    await page.waitForTimeout(5 * 1000);
+  
+    await page.goto('https://www.coingecko.com/account/candy?locale=en');
+  
+    const buttonCollectSelector = 'form.button_to input.collect-candy-button';
+    const balanceSelector = 'div[data-target="points.balance"]';
+  
+    const rewardButton = await page.$(buttonCollectSelector);
+  
+    if (rewardButton === null) {
+      console.log('Daily reward already collected.');
+      hook.send('Daily reward already collected.');
+    } else {
+      rewardButton.click();
+      console.log('Reward collected!');
+      hook.send('Reward collected!');
+    }
+  
+    await page.waitForSelector(balanceSelector);
+    let balance = await page.$eval(balanceSelector, el => el.textContent);
+  
+    console.log(`Balance: ${balance}`);
+    hook.send(`Balance: ${balance}`);
+  
+    console.log('Done!');
+  
+    await browser.close(); 
+  } catch (error) {
+    console.error(error);
+    return;
+  }
 })();
