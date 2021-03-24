@@ -73,7 +73,9 @@ const page = await browser.newPage();
   
     console.log('Done!');
   
-    await browser.close(); 
+    await browser.close();
+
+    process.exit(0);
   } catch (error) {
     console.error(error);
     return;
